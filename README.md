@@ -1,3 +1,3 @@
 # Programação Funcional
 
-Atividades desenvolvidas ao longo da cadeira Paradigmas de Linguagens Computacionais (CIn - UFPE)
+Atividades desenvolvidas ao longo da disciplina Paradigmas de Linguagens Computacionais (CIn - UFPE) para aprendizagem de programação funcional
