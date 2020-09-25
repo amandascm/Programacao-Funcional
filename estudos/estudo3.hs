@@ -134,3 +134,92 @@ dropSpace str = dropWhilee (==' ') str
 
 f2:: (t -> u -> v) -> (u -> t -> v)
 f2 f = (\x y -> f y x)
+
+{-tipos composicoes de funcao:
+(+2) :: (Num t) => t -> t
+(>2) :: (Ord t, Num t) => t -> Bool
+(3:) :: Num t => [t] -> [t]
+(++ "\n") :: Char a => [a] -> [a]
+filter (>0).map (+1) => (Ord t, Num t) => [t] -> [t]
+double = map (*2) :: Num t => [t] -> [t]
+
+dificil = map.filter
+(.) :: (b -> c) -> (a -> b) -> a -> c
+map :: (x -> y) -> [x] -> [y]
+filter :: (w -> Bool) -> [w] -> [w]
+a ---> (w -> Bool)
+b ---> ([w] -> [w])
+b ---> ([w] -> [w])
+c ---> ([[w]] -> [[w]])
+dificil :: (w -> Bool) -> [[w]] -> [[w]]
+
+maisdificil = map.foldr
+(.) :: (b -> c) -> (a -> b) -> a -> c
+map :: (x -> y) -> [x] -> [y]
+foldr :: Foldable t => (d -> e -> e) -> e -> t d -> e
+(a -> b) tem que corresponder a funcao foldr:
+a ---> (d -> e -> e)
+b ---> (e -> t d -> e)
+(b -> c) tem que corresponder a funcao map:
+b ---> (x -> y) .......... b ---> (e -> (t d -> e))
+c ---> ([x] -> [y]) ...... c ---> ([e] -> [t d -> e])
+(a -> c) corresponde a funcao maisdificil:
+maisdificil :: (d -> e -> e) -> ([e] -> [t d -> e])
+
+maisainda = foldr.map
+(.) :: (b -> c) -> (a -> b) -> a -> c
+foldr :: Foldable t => (d -> e -> e) -> e -> t d -> e
+map :: (x -> y) -> [x] -> [y]
+(a -> b) tem que corresponder a funcao map:
+a ---> (x -> y)
+b ---> ([x] -> [y])
+(b -> c) tem que corresponder a funcao foldr:
+b ---> (d -> e -> e) ....... b ---> qual e a correspondencia com o b acima?? Ela existe?
+c ---> (e -> t d -> e)
+(a -> c) corresponde a funcao maisainda:
+-}
+
+data Shape = Circle Float
+            | Rect Float Float
+
+--calcular a area de um Shape
+area :: Shape -> Float
+area (Circle r) = 3.1415 * (r^2)
+area (Rect l h) = l*h
+
+--tipo algebrico recursivo
+data Expr = Lit Int |
+            Add Expr Expr |
+            Sub Expr Expr
+
+--funcao para "printar" uma expressao
+showExpr :: Expr -> String
+showExpr (Lit x) = show x
+showExpr (Add x y) = "("++(showExpr x)++") + ("++(showExpr y)++")"
+showExpr (Sub x y) = "("++(showExpr x)++") - ("++(showExpr y)++")"
+
+--tipo algebrico para representar uma lista (um elemento aponta para o proximo ou para nenhum)
+data List t = Nil | Cons t (List t)
+
+--funcao para passar um tipo algebrico List para uma lista
+toList :: List t -> [t]
+toList (Nil) = []
+toList (Cons n p) = n:toList p
+
+--funcao para passar uma lista para o tipo List
+fromList :: [t] -> List t 
+fromList [] = Nil
+fromList (h:t) = Cons h (fromList t)
+
+--tipo para representar uma arvore de nos do tipo t
+data Tree t = NilT | Node t (Tree t) (Tree t)
+
+--funcao para obter a profundidade de uma arvore
+depth :: Tree t -> Int
+depth NilT = 0
+depth (Node n t1 t2) = 1 + (max (depth t1) (depth t2))
+
+--funcao para transformar os nos de uma arvore
+mapTree :: (t -> u) -> Tree t -> Tree u
+mapTree f NilT = NilT
+mapTree f (Node n t1 t2) = Node (f n) (mapTree f t1) (mapTree f t2)
